@@ -50,29 +50,23 @@ int main(int argc, char *argv[])
 {
     FILE *fptr;
     
-    if (argc < 2)
-    {
+    if (argc < 2) {
 	fprintf(stderr, "ERROR: NO SUBCOMMAND PROVIDED\n");
 	usage(argv[0]);
 	return 1;
     }
     
-    for (int i = 1; i < argc; i++)
-    {
-	if (strcmp(argv[i], "-k") == 0)
-	{
+    for (int i = 1; i < argc; i++) {
+	if (strcmp(argv[i], "-k") == 0) {
 	    srand(hash(argv[++i]));
 	}
-	else if (strcmp(argv[i], "encrypt") == 0)
-	{
+	else if (strcmp(argv[i], "encrypt") == 0) {
 	    mode = ENCRYPT;
 	}
-	else if (strcmp(argv[i], "decrypt") == 0)
-	{
+	else if (strcmp(argv[i], "decrypt") == 0) {
 	    mode = DECRYPT;
 	}
-	else if ((fptr = fopen(argv[i], "r")) == NULL)
-	{
+	else if ((fptr = fopen(argv[i], "r")) == NULL) {
 	    fprintf(stderr, "ERROR: Could not open file %s\n", argv[i]);
 	    usage(argv[0]);
 	    return 1;
@@ -90,45 +84,34 @@ int main(int argc, char *argv[])
     
     program[fsize] = 0;
 
-    if (mode == DECRYPT)
-    {
+    if (mode == DECRYPT) {
 	int dataPtr = 0;
 	
-	while (*program != 0)
-	{
+	while (*program != 0) {
 	    int charOffset = rand();
 	    
-	    if (*program == charPool[charOffset % charPoolSize])
-	    {
+	    if (*program == charPool[charOffset % charPoolSize]) {
 		mem[dataPtr]++;
 	    }
-	    else if (*program == charPool[(charOffset + 1) % charPoolSize])
-	    {
+	    else if (*program == charPool[(charOffset + 1) % charPoolSize]) {
 		mem[dataPtr]--;
 	    }
-	    else if (*program == charPool[(charOffset + 2) % charPoolSize])
-	    {
+	    else if (*program == charPool[(charOffset + 2) % charPoolSize]) {
 		dataPtr++;
 	    }
-	    else if (*program == charPool[(charOffset + 3) % charPoolSize])
-	    {
+	    else if (*program == charPool[(charOffset + 3) % charPoolSize]) {
 		dataPtr--;
 	    }
-	    else if (*program == charPool[(charOffset + 4) % charPoolSize])
-	    {
+	    else if (*program == charPool[(charOffset + 4) % charPoolSize]) {
 		printf("%c", mem[dataPtr]);
 	    }
-	    else if (*program == charPool[(charOffset + 5) % charPoolSize])
-	    {
+	    else if (*program == charPool[(charOffset + 5) % charPoolSize]) {
 		mem[dataPtr] = getchar();
 	    }
-	    else if (*program == charPool[(charOffset + 6) % charPoolSize])
-	    {
-		if (mem[dataPtr] == 0)
-		{
+	    else if (*program == charPool[(charOffset + 6) % charPoolSize]) {
+		if (mem[dataPtr] == 0) {
 		    int stackSize = 1;
-		    while (stackSize != 0)
-		    {
+		    while (stackSize != 0) {
 			switch(*program++)
 			{
 			case '[':
@@ -140,35 +123,29 @@ int main(int argc, char *argv[])
 			}
 		    }
 		}
-		else
-		{
+		else {
 		    retStack[retStackSize++] = program - 1;
 		}
 	    }
-	    else if (*program == charPool[(charOffset + 7) % charPoolSize])
-	    {
+	    else if (*program == charPool[(charOffset + 7) % charPoolSize]) {
 		program = retStack[--retStackSize];
 	    }
 	    
 	    program++;
 	}
     }
-    else if (mode == ENCRYPT)
-    {
+    else if (mode == ENCRYPT) {
 	char *outBuff = malloc(sizeof(char) * 30000);
 	memset(outBuff, 0, sizeof(char) * 30000);
 	int bufIndex = 0;
 	int acc = 0;
-	while (*program != 0)
-	{
+	while (*program != 0) {
 	    int charOffset;
 	    
-	    while (acc != *program)
-	    {
+	    while (acc != *program) {
 		charOffset = rand();
 		
-		if (acc > *program)
-		{
+		if (acc > *program) {
 		    outBuff[bufIndex++] = charPool[(charOffset + 1) % charPoolSize];
 		    acc--;
 		}
